@@ -1,6 +1,6 @@
 # grimoire
 
-This is my personal blog. It's build with SolidJS (SolidStart) and Actix.
+This is my personal blog. It's built with SolidJS (SolidStart) and Actix.
 
 ## Building
 
