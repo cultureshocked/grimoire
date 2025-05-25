@@ -87,8 +87,10 @@ async fn auth(pool: web::Data<Pool>, req_body: String) -> Result<HttpResponse, A
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+    let mut blogdb = std::env::var("HOME").unwrap();
+    blogdb.push_str("/blog.db"); 
 
-    let manager = SqliteConnectionManager::file("~/blog.db");
+    let manager = SqliteConnectionManager::file(blogdb);
     let pool = Pool::new(manager).unwrap();
 
     HttpServer::new(move || {
