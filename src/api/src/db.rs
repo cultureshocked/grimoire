@@ -2,6 +2,8 @@ use actix_web::{error, web, Error};
 // use rusqlite::Statement;
 use serde::{Deserialize, Serialize};
 use slugify::slugify;
+use sha2::{Sha256, Digest};
+use hex;
 
 pub type Pool = r2d2::Pool<r2d2_sqlite::SqliteConnectionManager>;
 pub type Connection = r2d2::PooledConnection<r2d2_sqlite::SqliteConnectionManager>;
@@ -243,6 +245,7 @@ fn get_tags_of_post(conn: Connection, slug: String) -> Result<String, rusqlite::
 
 fn authenticate(conn: Connection, data: String) -> Result<String, rusqlite::Error> {
     let user_data: AuthInfo = serde_json::from_str(&data).unwrap();
+    println!("{}", hex::encode(Sha256::digest(user_data.password.as_bytes())));
     let mut sql = conn.prepare(
         "SELECT id FROM auth \
             WHERE auth.username = :username AND \
@@ -250,7 +253,7 @@ fn authenticate(conn: Connection, data: String) -> Result<String, rusqlite::Erro
     )?;
     let id: i32 = sql.query_row(rusqlite::named_params! { 
         ":username": user_data.username,
-        ":password": user_data.password,
+        ":password": hex::encode(Sha256::digest(user_data.password.as_bytes())),
         }, |row| {
             Ok(row.get(0)?)
         }).unwrap_or_else(|_| 0);
