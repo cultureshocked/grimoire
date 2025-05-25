@@ -245,7 +245,6 @@ fn get_tags_of_post(conn: Connection, slug: String) -> Result<String, rusqlite::
 
 fn authenticate(conn: Connection, data: String) -> Result<String, rusqlite::Error> {
     let user_data: AuthInfo = serde_json::from_str(&data).unwrap();
-    println!("{}", hex::encode(Sha256::digest(user_data.password.as_bytes())));
     let mut sql = conn.prepare(
         "SELECT id FROM auth \
             WHERE auth.username = :username AND \
